@@ -13,11 +13,15 @@ d3.json(queryUrl).then(function (data) {
 function createFeatures(earthquakeData) {
 // Give each feature a popop to display size and place and date of earthquake
   function onEachFeature(feature, layer) {
-    layer.bindPopup(`<h3>Magnitude: ${feature.properties.mag}<hr> Location: ${feature.properties.place}</h3><hr><p>Date: ${new Date(feature.properties.time)}</p>`);
+    layer.bindPopup(`<h3>Location: ${feature.properties.place}<hr> Magnitude: ${feature.properties.mag}</h3><hr><p>Date: ${new Date(feature.properties.time)}</p>`);
   }
 
+  // Define markerSize() function based on magnitude of earthquake
+  function markerSize(mag) {
+    return mag * 25000;
+  }
   // Create variable for GeoJSON layer to add to map
-  var earthquakes = L.geoJSON(earthquakeData, {
+  var earthquakes = L.geoJSON(earthquakeData, {    
     onEachFeature: onEachFeature
   });
 
@@ -39,7 +43,7 @@ var outdoors = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/outdoors-v11
 });
 
   // Base layer map - optional requirement for satellite map if I can figure it out
-var satellite = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11.html?title=true&access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA#3.78/38.64/-95.72', {
+var satellite = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11.html?title=true&access_token={api}', {
 	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
   api: API_KEY
 });
