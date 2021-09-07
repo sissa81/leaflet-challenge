@@ -11,23 +11,26 @@ d3.json(queryUrl).then(function (data) {
 
 
 function createFeatures(earthquakeData) {
-// Give each feature a popop to display size and place and date of earthquake
-  function onEachFeature(feature, layer) {
+// Give each feature a pop up to display size and place and date of earthquake
+  function onEachFeature(feature, layer) {    
     layer.bindPopup(`<h3>Location: ${feature.properties.place}<hr> Magnitude: ${feature.properties.mag}</h3><hr><p>Date: ${new Date(feature.properties.time)}</p>`);
   }
 
-  // Define markerSize() function based on magnitude of earthquake
-  function markerSize(mag) {
-    return mag * 25000;
-  }
   // Create variable for GeoJSON layer to add to map
   var earthquakes = L.geoJSON(earthquakeData, {    
+    pointToLayer: function(feature, latlng) {
+      return L.circleMarker(latlng);
+    },
+    radius: earthquakeData.mag * 100000,
     onEachFeature: onEachFeature
   });
 
   // Send GeoJSOn layer to createmap function
   createMap(earthquakes)
 };
+
+
+
 
 function createMap(earthquakes) {
 
@@ -73,6 +76,34 @@ L.control.layers(baseMaps, overlayMaps, {
   collapsed: false
 }).addTo(myMap);
 
+
+// Create legend
+var legend = L.control({position: 'bottomright'});
+
+// Colors to use in legend
+function getColor(d) {
+  return d > 90 ? '#d73027' :
+         d > 70  ? '#fc8d59' :
+         d > 50  ? '#fee08b' :
+         d > 30  ? '#d9ef8b' :
+         d > 10   ? '#91cf60' :         
+                    '#1a9850';
+}
+
+legend.onAdd = function(map) {
+  var div = L.DomUtil.create('div', 'info legend'),
+  depth = [-10, 10, 30, 50, 70, 90],
+  labels = [];
+
+  // Loop through density intervals and generate a label with a colored square for each interval
+  for (var i=0; i < depth.length; i++) {
+    div.innerHTML +=
+    '<i style="background:' + getColor(depth[i] + 1) + '"></i> ' +
+    depth[i] + (depth[i + 1] ? '&ndash;' + depth[i + 1] + '<br>' : '+');
+  }
+  return div;
+};
+ legend.addTo(myMap);
 
 };
 
