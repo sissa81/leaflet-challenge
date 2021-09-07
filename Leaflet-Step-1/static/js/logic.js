@@ -18,10 +18,11 @@ function createFeatures(earthquakeData) {
 
   // Create variable for GeoJSON layer to add to map
   var earthquakes = L.geoJSON(earthquakeData, {    
-    pointToLayer: function(feature, latlng) {
+    pointToLayer: function(createFeatures, latlng) {
       return L.circleMarker(latlng);
     },
-    radius: earthquakeData.mag * 100000,
+    radius: Math.sqrt(earthquakeData.mag) * 10000,
+    weight: 0,
     onEachFeature: onEachFeature
   });
 
